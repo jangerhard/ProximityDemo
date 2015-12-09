@@ -7,6 +7,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -27,7 +29,7 @@ public class MyApplication extends Application {
     private String beaconID_Jani = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     private int jani_major = 16246, jani_minor = 59757;
     private Region region_jani;
-    private TextView tvBeacon;
+    private boolean showNots;
 
     @Override
     public void onCreate() {
@@ -39,12 +41,6 @@ public class MyApplication extends Application {
         //tvBeacon = (TextView)currentActivity.findViewById(R.id.tvBeacon);
 
         initialize();
-
-        region_jani = new Region(
-                "Jan's",
-                UUID.fromString(beaconID_Jani),
-                jani_major,
-                jani_minor);
 
         beaconManager.setMonitoringListener(new BeaconManager.MonitoringListener(){
 
@@ -77,18 +73,27 @@ public class MyApplication extends Application {
 
     private void initialize() {
 
+        region_jani = new Region(
+                "Jan's",
+                UUID.fromString(beaconID_Jani),
+                jani_major,
+                jani_minor);
 
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        showNots = SP.getBoolean("applicationNotifications", true);
 
     }
 
     public Activity getCurrentActivity(){
         return currentActivity;
     }
-    public void setCurrentActivity(Activity mCurrentActivity){
-        this.currentActivity = mCurrentActivity;
-    }
 
     public void showNotification(String title, String message) {
+
+        if(showNots == false){
+            return;
+        }
+
         Intent notifyIntent = new Intent(this, MainActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivities(this, 0,

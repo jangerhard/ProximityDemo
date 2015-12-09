@@ -1,5 +1,6 @@
 package com.firstapp.jangerhard.proximitydemo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,14 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private int jani_major = 16246, jani_minor = 59757;
     private String beaconID_Jani = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         tvBeacon = (TextView) findViewById(R.id.tvBeacon);
-        tvBeacon.setText("No..");
 
         beaconManager = new BeaconManager(this);
 
@@ -44,12 +43,13 @@ public class MainActivity extends AppCompatActivity {
                                                      Beacon nearestBeacon = list.get(0);
                                                      List<String> places = placesNearBeacon(nearestBeacon);
                                                      // TODO: update the UI here
+                                                     tvBeacon.setText(region.getIdentifier());
                                                      Log.d("Airport", "Nearest places: " + places);
                                                  }
                                              }
                                          });
-        region = new Region("ranged region of Jani",
-                UUID.fromString(beaconID_Jani), null, null);
+        region = new Region("Jani",
+                UUID.fromString(beaconID_Jani), jani_major, jani_minor);
     }
 
 
@@ -106,10 +106,6 @@ public class MainActivity extends AppCompatActivity {
         return Collections.emptyList();
     }
 
-    public void updateTextView(String a){
-        tvBeacon.setText(a);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -117,11 +113,15 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                Intent i = new Intent(this, MyPreferencesActivity.class);
+                startActivity(i);
+                return true;
+
+            default: return super.onOptionsItemSelected(item);
+
         }
 
-        return super.onOptionsItemSelected(item);
     }
 }

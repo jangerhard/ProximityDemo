@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.estimote.sdk.Beacon;
@@ -33,6 +34,10 @@ public class MyApplication extends Application {
         super.onCreate();
         beaconManager = new BeaconManager(getApplicationContext());
 
+        currentActivity = getCurrentActivity();
+
+        //tvBeacon = (TextView)currentActivity.findViewById(R.id.tvBeacon);
+
         initialize();
 
         region_jani = new Region(
@@ -46,12 +51,14 @@ public class MyApplication extends Application {
 
             @Override
             public void onEnteredRegion(Region region, List<Beacon> list) {
+                Log.d("MyApplication", "Entered region ");
                 //tvBeacon = (TextView) getCurrentActivity().findViewById(R.id.tvBeacon);
                 //tvBeacon.setText("Yes!");
                 showNotification("Welcome!", "Entered region of " + region.getIdentifier() + " beacon!");
             }
             @Override
             public void onExitedRegion(Region region) {
+                Log.d("MyApplication", "Exited region ");
                 //tvBeacon = (TextView) getCurrentActivity().findViewById(R.id.tvBeacon);
                 //tvBeacon.setText("Exited..!");
                 showNotification("Where you going?","Exited the region of " + region.getIdentifier() + " beacon!");
